@@ -178,6 +178,9 @@
     <ClCompile Include="src\EmotiBitLsl.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\EvtMarker.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="src">
@@ -574,6 +577,9 @@
     </ClInclude>
     <ClInclude Include="..\..\EmotiBit_XPlat_Utils\src\ArduinoString.h">
       <Filter>src\EmotiBit_XPlat_Utils\src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\EvtMarker.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

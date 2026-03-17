@@ -73,10 +73,14 @@ void ofApp::update() {
 		emotiBitWiFi.readAuxNetworkChannel();
 		emotiBitWiFi.updateAppAuxInstrQ();
 		// process elements in the AuxInstrQ
+#if ENABLE_EVT_MARKER
+		emotiBitWiFi.processAppAuxInstrQ_EvtMarker();
+#else
 		emotiBitWiFi.processAppAuxInstrQ();
 		// TODO: This function should really be on its own thread, running on a timer. See ofTimer: https://openframeworks.cc/documentation/utils/ofTimer/#show_reset
 		// TODO: This function should be called by the ofApp::processAuxQ
 		auxCtrlQ.clearStaleElement((uint32_t)ofGetElapsedTimeMillis());
+#endif
 	}
 
 
@@ -222,6 +226,9 @@ void ofApp::removeDataStream(std::string typetag)
 void ofApp::draw() {
 	drawOscilloscopes();
 	drawConsole();
+#if ENABLE_EVT_MARKER
+	_marker.draw();
+#endif
 }
 
 //--------------------------------------------------------------
@@ -948,7 +955,6 @@ void ofApp::processSlowResponseMessage(string packet) {
 
 void ofApp::processSlowResponseMessage(vector<string> splitPacket) 
 {
-
 	EmotiBitPacket::Header packetHeader;
 	if (EmotiBitPacket::getHeader(splitPacket, packetHeader)) 
 	{
@@ -962,6 +968,19 @@ void ofApp::processSlowResponseMessage(vector<string> splitPacket)
 		{
 			_testingHelper.update(splitPacket, packetHeader);
 		}
+#if ENABLE_EVT_MARKER
+		// process event mark
+		_marker.setTNow(packetHeader.timestamp);
+		if (packetHeader.typeTag.compare(TypeTag_EVT_MARKER) == 0) {
+			if (splitPacket.size() > EmotiBitPacket::headerLength && packetHeader.dataLength == 1) {
+				_marker.feed(packetHeader.timestamp, ofToInt(splitPacket.at(EmotiBitPacket::headerLength)));
+			} else {
+				assert(false);
+			}
+			return;
+		}
+#endif
+
 		// ToDo: the second comparison is redundant with the called func. Added it here to skip a function call. Might want to change the order later.
 		if (packetHeader.typeTag.compare(EmotiBitPacket::TypeTag::THERMOPILE) == 0 && typeTagIndexes.find(EmotiBitPacket::TypeTag::THERMOPILE) == typeTagIndexes.end())
 		{
@@ -1411,6 +1430,11 @@ void ofApp::setupOscilloscopes()
 	updatePlotAttributeLists();
 	updateTypeTagList();
 	initMetaDataBuffers();
+#if ENABLE_EVT_MARKER
+	if (scopeWins.size() && scopeWins[0].scopes.size()) {
+		_marker.setRefScope(scopeWins[0].scopes[0]);
+	}
+#endif
 }
 
 void ofApp::clearOscilloscopes(bool connectedDeviceUpdated)

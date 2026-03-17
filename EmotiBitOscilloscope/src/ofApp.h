@@ -312,6 +312,10 @@ public:
 	bool _processAuxCtrl = false;
 	AuxInstrQ auxCtrlQ;  ///< Main application queue for aux messages
 
+#if ENABLE_EVT_MARKER
+	EvtMarker	_marker;
+#endif
+
 	void initAuxControl(std::string commSettingsFile);
 };
 

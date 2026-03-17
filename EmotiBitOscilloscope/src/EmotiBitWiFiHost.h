@@ -19,6 +19,7 @@
 #include "json/json.h"
 #include "AuxCxnController.h"
 #include "EmotiBitOfUtils.h"
+#include "EvtMarker.h"
 using namespace EmotiBit;
 
 class EmotibitInfo
@@ -208,6 +209,8 @@ public:
 	 * \param q Pointer to the main application queue
 	 */
 	void processAppAuxInstrQ();
+
+	void processAppAuxInstrQ_EvtMarker();
 };
 
 
