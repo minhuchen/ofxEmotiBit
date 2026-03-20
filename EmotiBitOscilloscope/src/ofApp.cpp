@@ -948,6 +948,7 @@ void ofApp::processSlowResponseMessage(string packet) {
 	if (sendUdp) // Handle sending data to outputs
 	{
 		udpSender.Send(packet.c_str(), packet.length());
+		udpSender.Send("\n", 1);
 	}
 	vector<string> splitPacket = ofSplitString(packet, ",");	// split data into separate value pairs
 	processSlowResponseMessage(splitPacket);
