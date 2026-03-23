@@ -66,22 +66,20 @@ void ofApp::update() {
 	}
 	vector<string> dataPackets;
 	emotiBitWiFi.readData(dataPackets);
-	
+
+#if !ENABLE_EVT_MARKER
 	if (_processAuxCtrl)
 	{
 		// TODO: Move this to a new function ofApp::processAuxInstrQ, when we have more than 1 sources of auxillary intructions
 		emotiBitWiFi.readAuxNetworkChannel();
 		emotiBitWiFi.updateAppAuxInstrQ();
 		// process elements in the AuxInstrQ
-#if ENABLE_EVT_MARKER
-		emotiBitWiFi.processAppAuxInstrQ_EvtMarker();
-#else
 		emotiBitWiFi.processAppAuxInstrQ();
 		// TODO: This function should really be on its own thread, running on a timer. See ofTimer: https://openframeworks.cc/documentation/utils/ofTimer/#show_reset
 		// TODO: This function should be called by the ofApp::processAuxQ
 		auxCtrlQ.clearStaleElement((uint32_t)ofGetElapsedTimeMillis());
-#endif
 	}
+#endif
 
 
 	for (string packet : dataPackets)

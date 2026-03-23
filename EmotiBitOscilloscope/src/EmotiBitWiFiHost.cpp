@@ -639,6 +639,9 @@ void EmotiBitWiFiHost::updateDataThread()
 	while (!stopDataThread)
 	{
 		updateData();
+#if ENABLE_EVT_MARKER
+		processAppAuxInstrQ_EvtMarker();
+#endif
 		threadSleepFor(_wifiHostSettings.dataThreadSleep);
 	}
 }
@@ -1253,17 +1256,21 @@ void EmotiBitWiFiHost::processAppAuxInstrQ()
 	}
 }
 
+#if ENABLE_EVT_MARKER
 void EmotiBitWiFiHost::processAppAuxInstrQ_EvtMarker() {
+	readAuxNetworkChannel();
+	updateAppAuxInstrQ();
 	while (auxNetworkChannelController.appQ->getSize())	{
 		std::string msg;
 		auxNetworkChannelController.appQ->pop(msg);
 		try {
 			// each message should be an int value
 			int evt = std::stoi(msg);
-			sendControl(EmotiBitPacket::createPacket(TypeTag_EVT_MARKER, controlPacketCounter++, std::to_string(evt), 1));
+			sendData(EmotiBitPacket::createPacket(TypeTag_EVT_MARKER, controlPacketCounter++, std::to_string(evt), 1));
 		} catch (exception e) {
-			ofLogWarning("[EmotiBitWiFiHost::processAppQ] Failed to parse message ") << e.what();
+			ofLogWarning("[EmotiBitWiFiHost::processAppAuxInstrQ_EvtMarker] Failed to parse message ") << e.what();
 			ofLogWarning("Skipping: ") << msg;
 		}
 	}
 }
+#endif

@@ -210,7 +210,9 @@ public:
 	 */
 	void processAppAuxInstrQ();
 
+#if ENABLE_EVT_MARKER
 	void processAppAuxInstrQ_EvtMarker();
+#endif
 };
 
 
