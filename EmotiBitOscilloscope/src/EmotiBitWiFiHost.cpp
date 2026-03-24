@@ -1,4 +1,5 @@
 #include "EmotiBitWiFiHost.h"
+#include <ofApp.h>
 
 
 EmotiBitWiFiHost::~EmotiBitWiFiHost()
@@ -1260,13 +1261,18 @@ void EmotiBitWiFiHost::processAppAuxInstrQ()
 void EmotiBitWiFiHost::processAppAuxInstrQ_EvtMarker() {
 	readAuxNetworkChannel();
 	updateAppAuxInstrQ();
-	while (auxNetworkChannelController.appQ->getSize())	{
+	while (auxNetworkChannelController.appQ->getSize()) {
 		std::string msg;
 		auxNetworkChannelController.appQ->pop(msg);
 		try {
 			// each message should be an int value
 			int evt = std::stoi(msg);
-			sendData(EmotiBitPacket::createPacket(TypeTag_EVT_MARKER, controlPacketCounter++, std::to_string(evt), 1));
+			sendData(EmotiBitPacket::createPacket(TypeTag_EVT_MARKER, dataPacketCounter++, std::to_string(evt), 1));
+
+			if (evt == SYNC_EVT_ID) {
+				std::string packet = EmotiBitPacket::createPacket(TypeTag_EVT_MARKER_ECHO, dataPacketCounter, std::to_string(evt), 1);
+				((ofApp*)ofGetAppPtr())->sendoutUdpPacket(packet.c_str(), packet.length());
+			}
 		} catch (exception e) {
 			ofLogWarning("[EmotiBitWiFiHost::processAppAuxInstrQ_EvtMarker] Failed to parse message ") << e.what();
 			ofLogWarning("Skipping: ") << msg;

@@ -9,6 +9,10 @@
 
 // ref EmotiBitPacket::TypeTag: for other tags
 #define TypeTag_EVT_MARKER		"EV"
+#define TypeTag_EVT_MARKER_ECHO	"VE"
+
+// a special event used by custom app to get communication delay
+#define SYNC_EVT_ID				255
 
 
 struct EvtMarkerPair {

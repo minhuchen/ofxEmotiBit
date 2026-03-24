@@ -942,6 +942,23 @@ void ofApp::processAperiodicData(std::string signalId, std::vector<float> data)
 	}
 }
 
+#if ENABLE_EVT_MARKER
+void ofApp::sendoutUdpPacket(const char* packet, int len) {
+	if (sendUdp)
+	{
+		std::lock_guard<std::mutex> guard(_udpOutputMutex);
+		udpSender.Send(packet, len);
+		udpSender.Send("\n", 1);
+	}
+}
+
+void ofApp::processSlowResponseMessage(string packet) {
+	sendoutUdpPacket(packet.c_str(), packet.length());
+	vector<string> splitPacket = ofSplitString(packet, ",");	// split data into separate value pairs
+	processSlowResponseMessage(splitPacket);
+}
+
+#else
 void ofApp::processSlowResponseMessage(string packet) {
 	if (sendUdp) // Handle sending data to outputs
 	{
@@ -951,6 +968,7 @@ void ofApp::processSlowResponseMessage(string packet) {
 	vector<string> splitPacket = ofSplitString(packet, ",");	// split data into separate value pairs
 	processSlowResponseMessage(splitPacket);
 }
+#endif
 
 void ofApp::processSlowResponseMessage(vector<string> splitPacket) 
 {

@@ -314,6 +314,9 @@ public:
 
 #if ENABLE_EVT_MARKER
 	EvtMarker	_marker;
+	std::mutex  _udpOutputMutex;
+
+	void sendoutUdpPacket(const char* packet, int len);
 #endif
 
 	void initAuxControl(std::string commSettingsFile);
